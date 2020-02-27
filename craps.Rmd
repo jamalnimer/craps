@@ -65,6 +65,26 @@ x %>%
 # Assume that John Mark is honest. Yeah! How surprising is it to roll 6 winners?
 # How unusual is it to win against Ishan 4 to 0?
 
+contest_size <- 6
+number_of_contests <- 2
+n <- contest_size * number_of_contests
+
+x <- tibble(
+  results = map_int(1:n, ~ roll_two_dice()),
+  results2 = map_int(1:n, ~ roll_two_dice())
+  ) %>% 
+  mutate(craps1 = results %in% c(7,11)) %>% 
+  mutate(craps2 = results2 %in% c(7,11)) %>% 
+  mutate(winner = ifelse(
+    craps1 & craps2, 'Tie', ifelse(
+      craps1, 'IB', ifelse(
+         craps2, 'JM', 'no winner')
+      )
+    )
+  ) %>% 
+  mutate(contest=rep(1:number_of_contests, each = contest_size)) %>% 
+  group_by(contest) %>% 
+  summarize(jm_wins = sum(winner == "JM"))
+  
 
 ```
-
